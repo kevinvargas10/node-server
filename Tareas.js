@@ -8,50 +8,60 @@ const rl = readline.createInterface({
 const tasks = [];
 
 function addTask() {
-  rl.question('Introduce la descripción de la tarea: ', (description) => {
-    const task = {
-      id: tasks.length + 1,
-      description: description,
-      completed: false
-    };
-    tasks.push(task);
-    console.log(`Tarea "${description}" agregada con éxito.`);
-    showMenu();
+  return new Promise((resolve, reject) => {
+    rl.question('Introduce la descripción de la tarea: ', (description) => {
+      const task = {
+        id: tasks.length + 1,
+        description: description,
+        completed: false
+      };
+      tasks.push(task);
+      console.log(`Tarea "${description}" agregada con éxito.`);
+      resolve();
+    });
   });
 }
 
 function listTasks() {
-  console.log('\nLista de tareas:');
-  tasks.forEach((task) => {
-    const status = task.completed ? 'Completada' : 'No completada';
-    console.log(`[${task.id}] ${task.description} - ${status}`);
+  return new Promise((resolve, reject) => {
+    console.log('\nLista de tareas:');
+    tasks.forEach((task) => {
+      const status = task.completed ? 'Completada' : 'No completada';
+      console.log(`[${task.id}] ${task.description} - ${status}`);
+    });
+    resolve();
   });
-  showMenu();
 }
 
 function markTaskAsCompleted() {
-  rl.question('Introduce el número de tarea a marcar como completada: ', (taskId) => {
-    const task = tasks.find((t) => t.id === parseInt(taskId));
-    if (task) {
-      task.completed = true;
-      console.log(`Tarea "${task.description}" marcada como completada.`);
-    } else {
-      console.log('Tarea no encontrada.');
-    }
-    showMenu();
+  return new Promise((resolve, reject) => {
+    rl.question('Introduce el número de tarea a marcar como completada: ', (taskId) => {
+      const task = tasks.find((t) => t.id === parseInt(taskId));
+      if (task) {
+        task.completed = true;
+        console.log(`Tarea "${task.description}" marcada como completada.`);
+        resolve();
+      } else {
+        console.log('Tarea no encontrada.');
+        resolve();
+      }
+    });
   });
 }
 
 function deleteTask() {
-  rl.question('Introduce el número de tarea a eliminar: ', (taskId) => {
-    const taskIndex = tasks.findIndex((t) => t.id === parseInt(taskId));
-    if (taskIndex !== -1) {
-      const deletedTask = tasks.splice(taskIndex, 1);
-      console.log(`Tarea "${deletedTask[0].description}" eliminada.`);
-    } else {
-      console.log('Tarea no encontrada.');
-    }
-    showMenu();
+  return new Promise((resolve, reject) => {
+    rl.question('Introduce el número de tarea a eliminar: ', (taskId) => {
+      const taskIndex = tasks.findIndex((t) => t.id === parseInt(taskId));
+      if (taskIndex !== -1) {
+        const deletedTask = tasks.splice(taskIndex, 1);
+        console.log(`Tarea "${deletedTask[0].description}" eliminada.`);
+        resolve();
+      } else {
+        console.log('Tarea no encontrada.');
+        resolve();
+      }
+    });
   });
 }
 
@@ -66,16 +76,20 @@ function showMenu() {
   rl.question('Selecciona una opción: ', (option) => {
     switch (option) {
       case '1':
-        addTask();
+        addTask()
+          .then(() => showMenu());
         break;
       case '2':
-        listTasks();
+        listTasks()
+          .then(() => showMenu());
         break;
       case '3':
-        markTaskAsCompleted();
+        markTaskAsCompleted()
+          .then(() => showMenu());
         break;
       case '4':
-        deleteTask();
+        deleteTask()
+          .then(() => showMenu());
         break;
       case '5':
         rl.close();
